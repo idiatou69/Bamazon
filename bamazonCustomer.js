@@ -16,6 +16,7 @@ var connection = mysql.createConnection({
   password: "Fatimatou96",
   database: "bamazon"
 });
+
 connection.connect(function (err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
@@ -131,8 +132,6 @@ function inquire(res) {
           // };
 
 
-          // If the inquirerResponse confirms, we displays the inquirerResponse's username and pokemon from the answers.
-          // console.log(inquirerResponse)
         });
 
     }
