@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/idiatou69/Bamazon#readme",
   "dependencies": {
+    "console.table": "^0.10.0",
     "inquirer": "^6.5.0",
     "mysql": "^2.17.1"
   }
