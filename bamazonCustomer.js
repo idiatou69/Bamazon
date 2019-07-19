@@ -16,79 +16,127 @@ var connection = mysql.createConnection({
   password: "Fatimatou96",
   database: "bamazon"
 });
-connection.connect(function(err) {
+connection.connect(function (err) {
+  if (err) throw err;
+  console.log("connected as id " + connection.threadId);
+  menu();
+});
+
+function menu() {
+  connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
-    afterConnection();
+    console.table(res);
+
+    inquire(res)
+
   });
-  
-  function afterConnection() {
-    connection.query("SELECT * FROM products", function(err, res) {
-      if (err) throw err;
-      console.table(res);
-     
-      var productsArray=[];
-      for(var i =0; i<res.length; i++){
-       productsArray.push(res[i].product_name)
-      }
-      inquire( productsArray,res)
+}
 
- 
-    });
-  }
+function inquire(res) {
+  inquirer.prompt([{
+    type: "list",
+    message: "Do you want to exit?",
+    name: "quit",
+    choices: ["exit", "continue"]
+  }]).then(function (userInput) {
 
-  function inquire(products,res){
-// Create a "Prompt" with a series of questions.
-inquirer
-  .prompt([
-    
-    // Here we give the user a list to choose from.
-    {
-      type: "list",
-      message: "Which product do you choose?",
-      choices: products,
-      name: "products"
-    },
-    // Here we ask the user to confirm.
-    {
-      type: "text",
-      message: "how many ",
-      name: "quantity",
-   
+    if (userInput.quit === "exit") {
+      connection.end()
     }
-  ])
-  .then(function(inquirerResponse) {
-    var amount=parseInt(inquirerResponse.quantity);
-var quantity
-var index
-for(var i=0; i<res.length; i++){
+    else {
+      // Create a "Prompt" with a series of questions.
+      inquirer
+        .prompt([
 
-  if(inquirerResponse.products===res[i].product_name){
-    console.log(res);
-    quantity=parseInt(res[i].stock_quantity);
-    index=i;
-    
-  }
-};
-console.log(amount, quantity)
-if(amount<= quantity){
-  // console.log("yes" ,"yes")
-  quantity-=amount
-  var updateIndex = index+1;
-  console.log("quantity",quantity, 'index', index)
-  connection.query(`UPDATE bamazon.products SET stock_quantity=${quantity} WHERE id=${updateIndex}`, function(err, res){
-if (err) throw err
-// console.log("updated!");
+          // Here we give the user a list to choose from.
+          {
+            type: "input",
+            message: "Enter item id:",
+            validate: function (value) {
+              if (isNaN(value)) {
+                return false;
+              }
+              else {
+                return true;
+              }
+            },
+            name: "itemID"
+          },
+          // Here we ask the user to confirm.
+          {
+            type: "input",
+            message: "how many do you want to buy",
+            validate: function (value) {
+              if (isNaN(value)) {
+                return false;
+              }
+              else {
+                return true;
+              }
+            },
+            name: "quantity",
+
+          }
+        ])
+        .then(function (inquirerResponse) {
+
+          var query = connection.query("select * from products where id = ? ", [inquirerResponse.itemID],
+            function (err, res) {
+
+              var userQuantity = parseInt(inquirerResponse.quantity);
+
+              var tableQuantity = res[0].stock_quantity
+
+              var updateQty = tableQuantity - userQuantity
+
+
+
+              if (userQuantity <= res[0].stock_quantity) {
+                // console.log("yes" ,"yes")
+                // quantity -= amount
+                // var updateIndex = index + 1;
+                // console.log("quantity",quantity, 'index', index)
+                connection.query(`UPDATE bamazon.products SET  stock_quantity=${updateQty} WHERE id=${inquirerResponse.itemID}`, function (err, res) {
+                  if (err) throw err
+                  // console.log("updated!");
+                   
+                  menu();
+
+
+
+                })
+
+
+
+
+              }
+              else {
+                console.log("insufficient")
+                menu();
+              }
+
+
+            }
+            )
+
+          console.log(query.sql)
+          // for(var i=0; i<res.length; i++){
+
+          //   if(inquirerResponse.products===res[i].product_name){
+          //     console.log(res);
+          //     quantity=parseInt(res[i].stock_quantity);
+          //     index=i;
+
+          //   }
+          // };
+
+
+          // If the inquirerResponse confirms, we displays the inquirerResponse's username and pokemon from the answers.
+          // console.log(inquirerResponse)
+        });
+
+    }
   })
-  console.log("your total cost is "+ res[index].price*amount)
 
-}
-else{
-  console.log("insufficient")
-}
-     connection.end();
-    // If the inquirerResponse confirms, we displays the inquirerResponse's username and pokemon from the answers.
-   console.log(inquirerResponse )
-  });
 }
 
