@@ -3,7 +3,23 @@ Welcome to my Bamazon Application if you like it please check out my Github Prof
 
 Bamazon is a sellling application where you can place oders.
 Bamazon will ask you first if you want to exit, or continue.
-when you choose to continue it will display all the product that we have and it will ask you to put the product id, then it will ask how many do you want to buy? after putting the amount that you want it will calculate and then give you the price then our stock will decrease, when your oder is higher than the stock it will pop up insufficient .
+when you choose to continue it will display all the product that we have and it will ask you to put the product id, then it will ask how many do you want to buy? after putting the amount that you want then our stock will decrease. when your oder is higher than the stock it will pop up insufficient .
+
+
+node bamazon it displays exit and continue
+![node-bamazon](./images/img-1.PNG)
+
+if you choose to continue:
+![continue](./images/img2.PNG)
+
+then it will ask you the id number:
+![id-number](./images/img3.PNG)
+
+after how many product doo you want to buy:
+![amount-product](./images/img4.PNG)
+
+if your amount is >the stock it display insuficient
+![stock-insuficient](./images/img-5.PNG)
 
 
 The Bamazon application utilizes and requires these npm packages:
